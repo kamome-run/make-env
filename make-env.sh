@@ -1,6 +1,6 @@
 #!/bin/sh -eu
 
-# アップデートとアップグレード\
+# アップデートとアップグレード
 sudo apt update -y && sudo apt upgrade -y
 echo "アップデートとアップグレードに成功しました"
 
@@ -31,15 +31,28 @@ echo "studyJSの中に入りました"
 if command -v node > /dev/null 2>&1; then
     echo -e "Node.jsは既にインストールされています\nバージョンは$(node -v)です"
 else
-    echo -e "Node.jsはインストールされていません\nNode.jsをインストールします"
+    echo -e "Node.jsはまだインストールされていません\nNode.jsをインストールします"
     sudo apt install -y nodejs
 
-    if ! sudo apt install -y nodejs; then
+    if [[ $? -ne 0 ]]; then
         echo "Node.jsのインストールに失敗しました"
         exit 1
+    fi
 fi
 
 echo -e "Node.jsをインストールしました\nバージョンは$(node -v)です"
+
+# Vue.jsの開発環境を構築
+if npm list create-vue > /dev/null 2>&1; then
+    echo -e "Vue.jsの開発環境は既に構築されています\nバージョンは$(create-vue --version)です"
+else
+    echo -e "Vue.jsの開発環境はまだ構築されていません\nVue.jsの開発環境を構築します"
+    npm create vue@latest
+
+    if [[ $? -ne 0 ]]; then
+        echo "Vue.jsの開発環境の構築に失敗しました"
+        exit 1
+    fi
 fi
 
 # canvasをインストール
@@ -54,3 +67,6 @@ echo "canvasのインストールに成功しました"
 # npmのキャッシュを掃除する
 npm cache verify
 echo "npmのキャッシュを削除しました"
+
+# autoremove
+sudo apt autoremove -y
