@@ -6,25 +6,24 @@ echo "アップデートとアップグレードに成功しました"
 
 # カレントディレクトリを取得
 currentDir=$(pwd)
-# カレントディレクトリが/home/yusuke_oyama134553241であるかどうかの確認
-if [[ "$currentDir" = "/home/yusuke_oyama134553241" ]]; then
-    echo "カレントディレクトリは/home/yusuke_oyama134553241です"
+
+# カレントディレクトリがホームディレクトリであるかどうかの確認
+if [[ -d "$currentDir" = $HOME ]]; then
+    echo "カレントディレクトリはホームディレクトリです"
 else
-    echo -e "カレントディレクトリは/home/yusuke_oyama134553241ではありません\nカレントディレクトリを移動します"
+    echo -e "カレントディレクトリはホームディレクトリではありません\nカレントディレクトリを移動します"
     cd
-    echo "カレントディレクトリを/home/yusuke_oyama134553241に移動しました"
+    echo "カレントディレクトリをホームディレクトリに移動しました"
 fi
 
 # JavaScriptの学習用ディレクトリを作成し、その中に入る
-if [[ -d "/home/yusuke_oyama134553241/studyJS" ]]; then
-    echo "studyJSは既に存在します"
-else
+if [[ ! -d "$HOME/studyJS" ]]; then
     echo "JavaScriptの学習用ディレクトリstudyJSを作成します"
-    mkdir studyJS
+    mkdir "$HOME/studyJS"
     echo "studyJSディレクトリを作成しました"
 fi
 
-cd studyJS
+cd studyJS || { echo "studyJSディレクトリに移動できませんでした"; exit 1; }
 echo "studyJSの中に入りました"
 
 # Node.jsをインストールし、バージョンを確認
@@ -38,9 +37,24 @@ else
         echo "Node.jsのインストールに失敗しました"
         exit 1
     fi
+
+    echo -e "Node.jsをインストールしました\nバージョンは$(node -v)です"
 fi
 
-echo -e "Node.jsをインストールしました\nバージョンは$(node -v)です"
+# npmをインストールし、バージョンを確認
+if command -v npm > /dev/null 2>&1; then
+    echo -e "npmは既にインストールされています\nバージョンは$(npm -v)です"
+else
+    echo -e "npmはまだインストールされていません\nnpmをインストールします"
+    sudo apt install -y npm
+
+    if [[ $? -ne 0 ]]; then
+        echo "npmのインストールに失敗しました"
+        exit 1
+    fi
+
+    echo -e "npmをインストールしました\nバージョンは$(npm -v)です"
+fi
 
 # Vue.jsの開発環境を構築
 if npm list create-vue > /dev/null 2>&1; then
