@@ -4,35 +4,22 @@
 sudo apt update -y && sudo apt upgrade -y
 echo "アップデートとアップグレードに成功しました"
 
-# カレントディレクトリを取得
-currentDir=$(pwd)
+# JavaScriptの学習用ディレクトリを作成する
+OUTDIR=$HOME/studyJS
 
-# カレントディレクトリがホームディレクトリであるかどうかの確認
-if [[ -d "$currentDir" = $HOME ]]; then
-    echo "カレントディレクトリはホームディレクトリです"
-else
-    echo -e "カレントディレクトリはホームディレクトリではありません\nカレントディレクトリを移動します"
-    cd
-    echo "カレントディレクトリをホームディレクトリに移動しました"
-fi
-
-# JavaScriptの学習用ディレクトリを作成し、その中に入る
-if [[ ! -d "$HOME/studyJS" ]]; then
-    echo "JavaScriptの学習用ディレクトリstudyJSを作成します"
-    mkdir "$HOME/studyJS"
+if ! [ -d $OUTDIR ]; then
+    echo "JavaScriptの学習用ディレクトリstudyJSが存在しないので作成します"
+    mkdir $OUTDIR
     echo "studyJSディレクトリを作成しました"
 fi
-
-cd studyJS || { echo "studyJSディレクトリに移動できませんでした"; exit 1; }
-echo "studyJSの中に入りました"
 
 # Node.jsをインストールし、バージョンを確認
 if command -v node > /dev/null 2>&1; then
     echo -e "Node.jsは既にインストールされています\nバージョンは$(node -v)です"
 else
-    echo -e "Node.jsはまだインストールされていません\nNode.jsをインストールします"
-    sudo apt install -y nodejs
-
+    echo -e "Node.jsはまだインストールされていません\nディレクトリstudyJS内にNode.jsをインストールします"
+    cd $OUTDIR || { echo "studyJSの中に移動できませんでした"; exit 1; }; sudo apt install -y nodejs
+    
     if [[ $? -ne 0 ]]; then
         echo "Node.jsのインストールに失敗しました"
         exit 1
@@ -45,8 +32,8 @@ fi
 if command -v npm > /dev/null 2>&1; then
     echo -e "npmは既にインストールされています\nバージョンは$(npm -v)です"
 else
-    echo -e "npmはまだインストールされていません\nnpmをインストールします"
-    sudo apt install -y npm
+    echo -e "npmはまだインストールされていません\nstudyJS内にnpmをインストールします"
+    cd $OUTDIR || { echo "studyJSの中に移動できませんでした"; exit 1; }; sudo apt install -y npm
 
     if [[ $? -ne 0 ]]; then
         echo "npmのインストールに失敗しました"
